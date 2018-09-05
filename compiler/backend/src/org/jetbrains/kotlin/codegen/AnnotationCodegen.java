@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.codegen;
 import kotlin.collections.CollectionsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper;
 import org.jetbrains.kotlin.config.JvmTarget;
 import org.jetbrains.kotlin.descriptors.*;
@@ -85,10 +86,14 @@ public abstract class AnnotationCodegen {
 
     private final InnerClassConsumer innerClassConsumer;
     private final KotlinTypeMapper typeMapper;
+    private final ModuleDescriptor module;
 
-    private AnnotationCodegen(@NotNull InnerClassConsumer innerClassConsumer, @NotNull KotlinTypeMapper typeMapper) {
+    private AnnotationCodegen(
+            @NotNull InnerClassConsumer innerClassConsumer, @NotNull KotlinTypeMapper typeMapper, @NotNull ModuleDescriptor module
+    ) {
         this.innerClassConsumer = innerClassConsumer;
         this.typeMapper = typeMapper;
+        this.module = module;
     }
 
     /**
@@ -547,9 +552,9 @@ public abstract class AnnotationCodegen {
     public static AnnotationCodegen forClass(
             @NotNull ClassVisitor cv,
             @NotNull InnerClassConsumer innerClassConsumer,
-            @NotNull KotlinTypeMapper mapper
+            @NotNull GenerationState state
     ) {
-        return new AnnotationCodegen(innerClassConsumer, mapper) {
+        return new AnnotationCodegen(innerClassConsumer, state.getTypeMapper(), state.getModule()) {
             @NotNull
             @Override
             AnnotationVisitor visitAnnotation(String descr, boolean visible) {
@@ -561,9 +566,9 @@ public abstract class AnnotationCodegen {
     public static AnnotationCodegen forMethod(
             @NotNull MethodVisitor mv,
             @NotNull InnerClassConsumer innerClassConsumer,
-            @NotNull KotlinTypeMapper mapper
+            @NotNull GenerationState state
     ) {
-        return new AnnotationCodegen(innerClassConsumer, mapper) {
+        return new AnnotationCodegen(innerClassConsumer, state.getTypeMapper(), state.getModule()) {
             @NotNull
             @Override
             AnnotationVisitor visitAnnotation(String descr, boolean visible) {
@@ -575,9 +580,9 @@ public abstract class AnnotationCodegen {
     public static AnnotationCodegen forField(
             @NotNull FieldVisitor fv,
             @NotNull InnerClassConsumer innerClassConsumer,
-            @NotNull KotlinTypeMapper mapper
+            @NotNull GenerationState state
     ) {
-        return new AnnotationCodegen(innerClassConsumer, mapper) {
+        return new AnnotationCodegen(innerClassConsumer, state.getTypeMapper(), state.getModule()) {
             @NotNull
             @Override
             AnnotationVisitor visitAnnotation(String descr, boolean visible) {
@@ -590,9 +595,9 @@ public abstract class AnnotationCodegen {
             int parameter,
             @NotNull MethodVisitor mv,
             @NotNull InnerClassConsumer innerClassConsumer,
-            @NotNull KotlinTypeMapper mapper
+            @NotNull GenerationState state
     ) {
-        return new AnnotationCodegen(innerClassConsumer, mapper) {
+        return new AnnotationCodegen(innerClassConsumer, state.getTypeMapper(), state.getModule()) {
             @NotNull
             @Override
             AnnotationVisitor visitAnnotation(String descr, boolean visible) {
@@ -604,9 +609,9 @@ public abstract class AnnotationCodegen {
     public static AnnotationCodegen forAnnotationDefaultValue(
             @NotNull MethodVisitor mv,
             @NotNull InnerClassConsumer innerClassConsumer,
-            @NotNull KotlinTypeMapper mapper
+            @NotNull GenerationState state
     ) {
-        return new AnnotationCodegen(innerClassConsumer, mapper) {
+        return new AnnotationCodegen(innerClassConsumer, state.getTypeMapper(), state.getModule()) {
             @NotNull
             @Override
             AnnotationVisitor visitAnnotation(String descr, boolean visible) {
