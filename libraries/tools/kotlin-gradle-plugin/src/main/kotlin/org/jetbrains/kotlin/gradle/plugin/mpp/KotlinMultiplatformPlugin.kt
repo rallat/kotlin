@@ -29,8 +29,9 @@ import org.jetbrains.kotlin.gradle.utils.SingleWarningPerBuild
 import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.presetName
 
-internal val Project.multiplatformExtension get(): KotlinMultiplatformExtension? =
-    project.extensions.findByName("kotlin") as? KotlinMultiplatformExtension
+internal val Project.multiplatformExtension
+    get(): KotlinMultiplatformExtension? =
+        project.extensions.findByName("kotlin") as? KotlinMultiplatformExtension
 
 class KotlinMultiplatformPlugin(
     private val fileResolver: FileResolver,
@@ -170,7 +171,7 @@ class KotlinMultiplatformPlugin(
     private fun configureSourceJars(project: Project) = with(project.kotlinExtension as KotlinMultiplatformExtension) {
         targets.all { target ->
             val mainCompilation = target.compilations.findByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-                // If a target has no `main` compilation (e.g. Android), don't create the source JAR
+            // If a target has no `main` compilation (e.g. Android), don't create the source JAR
                 ?: return@all
 
             val sourcesJar = project.tasks.create(target.sourcesJarTaskName, Jar::class.java) { sourcesJar ->
@@ -189,7 +190,7 @@ class KotlinMultiplatformPlugin(
         }
     }
 
-    private fun configureSourceSets(project: Project) = with (project.kotlinExtension as KotlinMultiplatformExtension) {
+    private fun configureSourceSets(project: Project) = with(project.kotlinExtension as KotlinMultiplatformExtension) {
         val production = sourceSets.create(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
         val test = sourceSets.create(KotlinSourceSet.COMMON_TEST_SOURCE_SET_NAME)
 
@@ -247,7 +248,7 @@ class KotlinMultiplatformPlugin(
         const val METADATA_TARGET_NAME = "metadata"
 
         const val GRADLE_METADATA_WARNING =
-            // TODO point the user to some MPP docs explaining this in more detail
+        // TODO point the user to some MPP docs explaining this in more detail
             "This build is set up to publish Kotlin multiplatform libraries with experimental Gradle metadata. " +
                     "Future Gradle versions may fail to resolve dependencies on these publications. " +
                     "You can disable Gradle metadata usage during publishing and dependencies resolution by removing " +
