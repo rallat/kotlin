@@ -27,6 +27,7 @@ class DeferredMethodVisitor(
     override fun visitEnd() {
         super.visitEnd()
         val resultVisitor = resultNode()
+        intermediate.instructions.resetLabels()
         intermediate.accept(resultVisitor)
     }
 }
