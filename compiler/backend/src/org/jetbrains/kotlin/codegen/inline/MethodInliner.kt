@@ -133,7 +133,6 @@ class MethodInliner(
 
         //flush transformed node to output
         AsmUtil.resetLabelInfos(resultNode)
-        resultNode.instructions.resetLabels()
         resultNode.accept(MethodBodyVisitor(adapter, true))
 
         sourceMapper.endMapping()
