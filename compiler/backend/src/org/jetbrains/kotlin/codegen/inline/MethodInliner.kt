@@ -1158,10 +1158,12 @@ class MethodInliner(
                     }
 
                     //generate finally block before nonLocalReturn flag/return/goto
-                    val label = LabelNode()
-                    instructions.insert(insnNode, label)
+                    val labelNode = LabelNode()
+                    instructions.insert(insnNode, labelNode)
+                    labelNode.label.info = labelNode
+
                     result.add(PointForExternalFinallyBlocks(
-                            getInstructionToInsertFinallyBefore(insnNode, isLocalReturn), getReturnType(insnNode.opcode), label
+                        getInstructionToInsertFinallyBefore(insnNode, isLocalReturn), getReturnType(insnNode.opcode), labelNode
                     ))
                 }
                 insnNode = insnNode.next
