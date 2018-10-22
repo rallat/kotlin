@@ -18,6 +18,7 @@ package org.jetbrains.kotlin.codegen;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.codegen.inline.MethodInliner;
 import org.jetbrains.org.objectweb.asm.MethodVisitor;
 import org.jetbrains.org.objectweb.asm.Opcodes;
 import org.jetbrains.org.objectweb.asm.tree.LocalVariableNode;
@@ -54,9 +55,13 @@ public abstract class TransformationMethodVisitor extends MethodVisitor {
     @Override
     public void visitEnd() {
         // force mv to calculate maxStack/maxLocals in case it didn't yet done
+        MethodInliner.Companion.checkTryCatchBlocks(methodNode);
+
         if (methodNode.maxLocals <= 0 || methodNode.maxStack <= 0) {
             mv.visitMaxs(-1, -1);
         }
+
+        MethodInliner.Companion.checkTryCatchBlocks(methodNode);
 
         super.visitEnd();
 
@@ -82,11 +87,20 @@ public abstract class TransformationMethodVisitor extends MethodVisitor {
                 }
             }
 
+            MethodInliner.Companion.checkTryCatchBlocks(methodNode);
+
             delegate.visitEnd();
         }
         catch (Throwable t) {
             throw new CompilationException("Couldn't transform method node:\n" + getNodeText(methodNode), t, null);
         }
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        MethodInliner.Companion.checkTryCatchBlocks(methodNode);
+        super.visitMaxs(maxStack, maxLocals);
+        MethodInliner.Companion.checkTryCatchBlocks(methodNode);
     }
 
     protected abstract void performTransformations(@NotNull MethodNode methodNode);

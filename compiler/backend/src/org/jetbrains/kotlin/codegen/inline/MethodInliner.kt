@@ -136,6 +136,9 @@ class MethodInliner(
         resultNode.accept(MethodBodyVisitor(adapter, true))
 
         sourceMapper.endMapping()
+
+        checkTryCatchBlocks(resultNode)
+
         return result
     }
 
@@ -387,6 +390,8 @@ class MethodInliner(
 
         AsmUtil.resetLabelInfos(node)
         node.accept(lambdaInliner)
+
+        checkTryCatchBlocks(resultNode)
 
         return resultNode
     }
@@ -989,6 +994,37 @@ class MethodInliner(
     )
 
     companion object {
+
+        fun checkTryCatchBlocks(resultNode: MethodNode) {
+            resultNode.tryCatchBlocks.forEach { tcb ->
+                val end = tcb.end
+                val handler = tcb.handler
+                val start = tcb.start
+
+                var foundEnd = false
+                var foundHandler = false
+                var foundStart = false
+
+                resultNode.instructions.asSequence().forEach {
+                    if (it == end) {
+                        foundEnd = true
+                    }
+
+                    if (it == start) {
+                        foundStart = true
+                    }
+
+                    if (it == handler) {
+                        foundHandler = true
+                    }
+                }
+
+                if (!(foundEnd && foundStart && foundHandler)) {
+                    throw java.lang.IllegalStateException("Here")
+                }
+            }
+        }
+
 
         @JvmStatic
         fun findCapturedField(node: FieldInsnNode, fieldRemapper: FieldRemapper): CapturedParamInfo {

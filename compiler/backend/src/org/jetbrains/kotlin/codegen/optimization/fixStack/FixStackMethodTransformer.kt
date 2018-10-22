@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.codegen.optimization.fixStack
 
+import org.jetbrains.kotlin.codegen.inline.MethodInliner
 import org.jetbrains.kotlin.codegen.inline.isAfterInlineMarker
 import org.jetbrains.kotlin.codegen.inline.isBeforeInlineMarker
 import org.jetbrains.kotlin.codegen.inline.isInlineMarker
@@ -48,6 +49,8 @@ class FixStackMethodTransformer : MethodTransformer() {
 
         removeAlwaysTrueIfeqMarkers(context, methodNode)
         removeAlwaysFalseIfeqMarkers(context, methodNode)
+
+        MethodInliner.checkTryCatchBlocks(methodNode)
     }
 
     private fun analyzeAndTransformBreakContinueGotos(context: FixStackContext, internalClassName: String, methodNode: MethodNode) {

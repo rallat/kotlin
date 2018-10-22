@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.codegen.context.*;
 import org.jetbrains.kotlin.codegen.coroutines.CoroutineCodegenUtilKt;
 import org.jetbrains.kotlin.codegen.coroutines.SuspendFunctionGenerationStrategy;
 import org.jetbrains.kotlin.codegen.coroutines.SuspendInlineFunctionGenerationStrategy;
+import org.jetbrains.kotlin.codegen.inline.MethodInliner;
 import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper;
 import org.jetbrains.kotlin.config.JvmDefaultMode;
@@ -489,6 +490,8 @@ public class FunctionCodegen {
             Type owningType = typeMapper.mapClass((ClassifierDescriptor) staticFunctionDescriptor.getContainingDeclaration());
             generateDelegateToStaticMethodBody(false, mv, accessorMethod, owningType.getInternalName(), false);
         }
+
+
 
         endVisit(mv, null, origin.getElement());
     }

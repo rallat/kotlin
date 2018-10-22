@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.codegen.optimization
 
+import org.jetbrains.kotlin.codegen.inline.MethodInliner
 import org.jetbrains.kotlin.codegen.optimization.common.removeEmptyCatchBlocks
 import org.jetbrains.kotlin.codegen.optimization.transformer.MethodTransformer
 import org.jetbrains.org.objectweb.asm.Label
@@ -32,6 +33,8 @@ class LabelNormalizationMethodTransformer : MethodTransformer() {
         val newLabelNodes = hashMapOf<Label, LabelNode>()
 
         fun transform() {
+            MethodInliner.checkTryCatchBlocks(methodNode)
+
             if (rewriteLabelInstructions()) {
                 rewriteNonLabelInstructions()
                 rewriteTryCatchBlocks()
@@ -58,6 +61,9 @@ class LabelNormalizationMethodTransformer : MethodTransformer() {
                     thisNode = thisNode.next
                 }
             }
+
+//            MethodInliner.checkTryCatchBlocks(methodNode)
+
             return removedAnyLabels
         }
 
@@ -79,6 +85,8 @@ class LabelNormalizationMethodTransformer : MethodTransformer() {
                         thisNode.next
                 }
             }
+
+//            MethodInliner.checkTryCatchBlocks(methodNode)
         }
 
         private fun rewriteLineNumberNode(oldLineNode: LineNumberNode): AbstractInsnNode? =
@@ -97,12 +105,16 @@ class LabelNormalizationMethodTransformer : MethodTransformer() {
             instructions.replaceNodeGetNext(oldFrameNode, oldFrameNode.rewriteLabels())
 
         private fun rewriteTryCatchBlocks() {
+//            MethodInliner.checkTryCatchBlocks(methodNode)
+
             methodNode.tryCatchBlocks = methodNode.tryCatchBlocks.map { oldTcb ->
                 val newTcb = TryCatchBlockNode(getNew(oldTcb.start), getNew(oldTcb.end), getNew(oldTcb.handler), oldTcb.type)
                 newTcb.visibleTypeAnnotations = oldTcb.visibleTypeAnnotations
                 newTcb.invisibleTypeAnnotations = oldTcb.invisibleTypeAnnotations
                 newTcb
             }
+
+            MethodInliner.checkTryCatchBlocks(methodNode)
         }
 
         private fun rewriteLocalVars() {

@@ -16,13 +16,17 @@
 
 package org.jetbrains.kotlin.codegen.optimization.transformer
 
+import org.jetbrains.kotlin.codegen.inline.MethodInliner
 import org.jetbrains.org.objectweb.asm.tree.MethodNode
 
 open class CompositeMethodTransformer(private val transformers: List<MethodTransformer>) : MethodTransformer() {
     constructor(vararg transformers: MethodTransformer?) : this(transformers.filterNotNull())
 
     override fun transform(internalClassName: String, methodNode: MethodNode) {
-        transformers.forEach { it.transform(internalClassName, methodNode) }
+        transformers.forEach {
+            it.transform(internalClassName, methodNode)
+            MethodInliner.checkTryCatchBlocks(methodNode)
+        }
     }
 
     companion object {
