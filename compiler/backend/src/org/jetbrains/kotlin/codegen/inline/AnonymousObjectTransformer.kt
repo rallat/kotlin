@@ -407,7 +407,7 @@ class AnonymousObjectTransformer(
 
         val first = intermediateMethodNode.instructions.first
         val oldStartLabel = (first as? LabelNode)?.label
-        intermediateMethodNode.instructions.resetLabels()
+        AsmUtil.resetLabelInfos(intermediateMethodNode)
         intermediateMethodNode.accept(object : MethodBodyVisitor(capturedFieldInitializer) {
             override fun visitLocalVariable(
                     name: String, desc: String, signature: String?, start: Label, end: Label, index: Int
