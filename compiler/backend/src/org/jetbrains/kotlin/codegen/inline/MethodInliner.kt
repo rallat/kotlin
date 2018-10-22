@@ -132,6 +132,7 @@ class MethodInliner(
         processReturns(resultNode, labelOwner, remapReturn, end)
 
         //flush transformed node to output
+        AsmUtil.resetLabelInfos(resultNode)
         resultNode.instructions.resetLabels()
         resultNode.accept(MethodBodyVisitor(adapter, true))
 
@@ -385,7 +386,7 @@ class MethodInliner(
             }
         }
 
-        node.instructions.resetLabels()
+        AsmUtil.resetLabelInfos(node)
         node.accept(lambdaInliner)
 
         return resultNode
