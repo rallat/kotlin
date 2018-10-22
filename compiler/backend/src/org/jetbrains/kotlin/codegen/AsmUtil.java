@@ -1235,6 +1235,11 @@ public class AsmUtil {
     }
 
     public static void resetLabelInfos(@NotNull MethodNode methodNode) {
+        //noinspection ConstantConditions
+        if (Opcodes.API_VERSION <= Opcodes.ASM5) {
+            return;
+        }
+
         InsnList instructions = methodNode.instructions;
         for(AbstractInsnNode inst = instructions.getFirst(); inst != null; inst = inst.getNext()) {
             if (inst instanceof LabelNode) {
